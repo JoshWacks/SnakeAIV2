@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 public class SnakeMethods extends NodeArray {
-	protected static ArrayList<Node>mySnake=new ArrayList();
+	protected ArrayList<Node>mySnake=new ArrayList();
 	private static int mySnakeNum;
 	private Node mySnakesecondPos;
 	private Node apple;
@@ -37,6 +37,7 @@ public class SnakeMethods extends NodeArray {
 	public void setMySnakeNum(int num) {
 		mySnake.clear();
 		mySnakeNum=num;
+		setMySnakeNumNodeArray(num);
 	}
 	
 	
@@ -56,7 +57,7 @@ public class SnakeMethods extends NodeArray {
 				setStart(x1,y1,x2,y2);
 			}
 			
-			else if(i==0) {
+			else if(num!=mySnakeNum &&i==0) {
 				setEnemySnakNextMoves(x1,y1);
 			}
 			
@@ -96,15 +97,17 @@ public class SnakeMethods extends NodeArray {
 	}
 	
 	public void setEnemySnakNextMoves(int x,int y) {
-		for(int i=x-2;i<=x+2;i++) {
-			for(int j=y-2;j<=y+2;j++) {
+		for(int i=x-1;i<=x+1;i++) {
+			for(int j=y-1;j<=y+1;j++) {
 				if(nodeExistsAt(i,j)) {
-					if((i!=x || j !=y)  && (i!=x+2 || j!=y+2) && (i!=-2 || j!=y-2) ) {
+					if(getValueAt(i,j)==7  ) {
 						setValueOf(i,j,4);
 					}
 				}
 			}
 		}
+		
+
 		
 	
 		
@@ -131,13 +134,16 @@ public class SnakeMethods extends NodeArray {
 	
 	
 	
-	
-	
 	public int getNextMove() {
 
-		PathFinding pf=new PathFinding(start,apple,getMySnakeDir(),mySnake);
+		PathFinding pf=new PathFinding((ArrayList<Node>) getBoard().clone(),start,apple,getMySnakeDir(),(ArrayList<Node>) mySnake.clone());
 		return pf.getNextMove(mySnakeNum);
 		
+	}
+	
+	public ArrayList<Node> getBoard(){
+		
+		return board;
 	}
 
 }

@@ -1,20 +1,14 @@
 import java.util.ArrayList;
 
-public class NodeArray {
-	protected ArrayList<Node> board=new ArrayList<Node>();
-	private static int mySnakeNum;
+public class ModArray {
+	protected ArrayList<Node> modBoard=new ArrayList<Node>();
 	
-	public NodeArray() {
-		
-	}
-	
-
 	protected void makeBoard() {
 		for(int y=0;y<50;y++) {
 			for(int x=0;x<50;x++) {
 				
 				Node node=new Node(7,x,y);
-				board.add(node);
+				modBoard.add(node);
 			}
 		
 			
@@ -26,7 +20,7 @@ public class NodeArray {
 		for(int y=0;y<50;y++) {
 			for(int x=0;x<50;x++) {
 				
-				board.get(50*y+x).setValue(7);
+				modBoard.get(50*y+x).setValue(7);
 			}
 		
 			
@@ -36,7 +30,7 @@ public class NodeArray {
 	public void printBoard() {
 		for(int y=0;y<50;y++) {
 			for(int x=0;x<50;x++) {
-				System.err.print(board.get(50*y+x).getValue()+" ");
+				System.err.print(modBoard.get(50*y+x).getValue()+" ");
 			}
 			System.err.println();
 		}
@@ -44,15 +38,15 @@ public class NodeArray {
 	}
 	
 	protected void setValueOf(int x,int y,int value) {
-		board.get((50*y+x)).setValue(value);
+		modBoard.get((50*y+x)).setValue(value);
 	}
 	
 	protected Node getNodeAt(int x,int y) {
-		return board.get((50*y+x));
+		return modBoard.get((50*y+x));
 	}
 	
 	protected int getValueAt(int x,int y) {
-		return board.get((50*y+x)).getValue();
+		return modBoard.get((50*y+x)).getValue();
 	}
 	
 	protected boolean nodeExistsAt(int x,int y) {
@@ -63,27 +57,5 @@ public class NodeArray {
 
 		return false;
 	}
-
-
-	public int getMySnakeNum() {
-		return mySnakeNum;
-	}
-
-
-	public static void setMySnakeNumNodeArray(int n) {
-		mySnakeNum = n;
-	}
-	
-	public ArrayList<Node> getBoard(){
-		return board;
-	}
-	
-	public void setBoard(ArrayList<Node>b) {
-		board=b;
-	}
-	
-	
-
-	
 	
 }

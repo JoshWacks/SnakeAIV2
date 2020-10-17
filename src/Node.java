@@ -14,6 +14,8 @@ public class Node implements Comparable{
 	private double g;
 	private double h;
 	private double f;
+	private int prevX;
+	private int prevY;
 	
 	public Node(int value,int x,int y) {
 		this.value=value;
@@ -36,6 +38,8 @@ public class Node implements Comparable{
 		this.h=h;
 		f=g+h;
 	}
+	
+	
 
 	public int getValue() {
 		return value;
@@ -93,6 +97,22 @@ public class Node implements Comparable{
 		this.f = f;
 	}
 	
+	public int getPrevX() {
+		return prevX;
+	}
+
+	public void setPrevX(int prevX) {
+		this.prevX = prevX;
+	}
+
+	public int getPrevY() {
+		return prevY;
+	}
+
+	public void setPrevY(int prevY) {
+		this.prevY = prevY;
+	}
+
 	public String toString() {
 		if(parent==null) {
 			return "X: "+ x+ " Y: "+y+ " Value: "+value;
@@ -101,6 +121,8 @@ public class Node implements Comparable{
 			return "X: "+ x+ " Y: "+y+ " Value: "+value +" Parent "+parent.x+ ":" +parent.y+ " G: "+g+ " H: "+ h+" F: "+f;
 		}
 	}
+	
+	
 	
 	@Override
     public int compareTo(Object o) {

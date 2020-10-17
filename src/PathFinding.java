@@ -4,7 +4,7 @@ import java.util.PriorityQueue;
 
 public class PathFinding extends NodeArray {
 	private int mySnakeNum;
-	private ArrayList<Node>mySnake=new ArrayList();
+	private ArrayList<Node>mySnake=new ArrayList<Node>();
 	private int mySnakeDir;
 	
 	private Node startNode;
@@ -16,11 +16,18 @@ public class PathFinding extends NodeArray {
 	
 	
 
-	public PathFinding(Node s, Node a, int dir,ArrayList<Node> tail) {
-
+	public PathFinding(ArrayList<Node>b,Node s, Node a, int dir,ArrayList<Node> tail) {
+		setBoard(b);
 		startNode = s;
 		apple = a;
 		mySnakeDir = dir;
+		mySnake=tail;
+	}
+	
+	public PathFinding(Node s, Node a, ArrayList<Node> tail) {
+		
+		startNode = s;
+		apple = a;
 		mySnake=tail;
 	}
 
@@ -35,7 +42,7 @@ public class PathFinding extends NodeArray {
 		return array.stream().anyMatch((n) -> (n.getX() == node.getX() && n.getY() == node.getY()));
 	}
 
-	private void addNeighborsToOpenList() {
+	private void addNeighborsToOpenList(int target) {
 		Node node;
 
 		for (int x = -1; x <= 1; x++) {
@@ -43,12 +50,14 @@ public class PathFinding extends NodeArray {
 				if (x != 0 && y != 0) {// no diagonal movement
 					continue;
 				}
-				node = new Node(7, currentNode.getX() + x, currentNode.getY() + y, currentNode, currentNode.getG() + 1,
+				node = new Node(7, currentNode.getX() + x, currentNode.getY() + y, 
+						currentNode, 
+						currentNode.getG() + 1,
 						distance(x, y));
 				if (x != 0 || y != 0) {// not the same node
 					if (nodeExistsAt(currentNode.getX() + x, currentNode.getY() + y)
 							&& (getNodeAt(currentNode.getX() + x, currentNode.getY() + y).getValue() == 7
-									|| getNodeAt(currentNode.getX() + x, currentNode.getY() + y).getValue() == 6)
+									|| getNodeAt(currentNode.getX() + x, currentNode.getY() + y).getValue() == target)
 							&& !findNeighborInList(openList, node) && !findNeighborInList(closedList, node)) {
 						// System.err.println(node.toString());
 						openList.add(node);
@@ -72,20 +81,19 @@ public class PathFinding extends NodeArray {
 		return smallest;
 	}
 
-	private ArrayList<Node> findPath() {
+	private ArrayList<Node> findPath(Node target) {
 		currentNode = startNode;
-
 		closedList.add(currentNode);
-		addNeighborsToOpenList();
+		addNeighborsToOpenList(target.getValue());
 
-		while (currentNode.getX() != apple.getX() || currentNode.getY() != apple.getY()) {
+		while (currentNode.getX() != target.getX() || currentNode.getY() != target.getY()) {
 			if (openList.size() == 0) {
 				return null;
 			}
 			currentNode = getSmallest();
 			openList.remove(0);
 			closedList.add(currentNode);
-			addNeighborsToOpenList();
+			addNeighborsToOpenList(target.getValue());
 		}
 		path.add(0, currentNode);
 		while (currentNode.getX() != startNode.getX() || currentNode.getY() != startNode.getY()) {// backtracking to get
@@ -106,7 +114,7 @@ public class PathFinding extends NodeArray {
 
 		double dist = Math.sqrt(sum1 + sum2);
 
-		if (dist > 30) {
+		if (dist > 25) {
 			return false;
 		}
 		return true;
@@ -114,6 +122,7 @@ public class PathFinding extends NodeArray {
 	}
 
 	private int getMove(Node n) {
+		setValueOf(n.getX(),n.getY(),9);
 		if (startNode.getX() == n.getX()) {// a move in the y
 			if (startNode.getY() > n.getY()) {
 				return 0;
@@ -130,11 +139,16 @@ public class PathFinding extends NodeArray {
 	}
 
 	public int getNextMove(int num) {
+		clearLists();
 		mySnakeNum = num;
-		ArrayList<Node> path = findPath();
-		if (path == null || !checkDistance(startNode)) {
+		ModMethods modMethods=new ModMethods();
+		if(!checkDistance(startNode)) {
+			return modMethods.getNextSafeMove( board,mySnake, startNode,mySnakeDir);
+		}
+		ArrayList<Node> path = findPath(apple);
+		if (path == null ) {
 			// System.err.println("Getting a safe move");
-			return getASafeMove(board,startNode);
+			return modMethods.getNextSafeMove( board,mySnake, startNode,mySnakeDir);
 		}
 
 		Node n = path.get(1);
@@ -142,89 +156,30 @@ public class PathFinding extends NodeArray {
 		return getMove(n);
 	}
 	
-//	private boolean beginCheck() {
-//		NodeArray nodeArray=new NodeArray(board);
-//		
-//		
-//	}
-
-	private int getASafeMove(ArrayList<Node> currentBoard,Node currentStartNode) {
-		int startX = currentStartNode.getX();
-		int startY = currentStartNode.getY();
-		int maxMove = 5;
-		ArrayList<Node> possibleMoves = new ArrayList<Node>();
-
-		if (startY - 1 >= 0) {
-
-			if (getValueAt(startX, startY - 1) == 7 || getValueAt(startX, startY - 1) == 6
-					|| getValueAt(startX, startY - 1) == 4 || getValueAt(startX, startY - 1) == 8) {
-
-				Node node = new Node(0, startX, startY - 1);
-				possibleMoves.add(node);
-				// return 0;
-			}
-
+	public int getSafeMove(Node openSpace) {
+		clearLists();
+		System.err.println("Value "+openSpace.getValue());
+		ArrayList<Node> path = findPath(openSpace);
+		if(path==null) {
+			System.err.println("null");
+			return -1;
 		}
-
-		if (startY + 1 < 50) {
-
-			if (getValueAt(startX, startY + 1) == 7 || getValueAt(startX, startY + 1) == 6
-					|| getValueAt(startX, startY + 1) == 4 || getValueAt(startX, startY + 1) == 8) {
-				Node node = new Node(1, startX, startY + 1);
-				possibleMoves.add(node);
-
-				// return 1;
-
-			}
+		setValueOf(openSpace.getX(),openSpace.getY(),-1);
+		if(path.size()==1) {
+			return getMove(path.get(0));
 		}
-
-		if (startX - 1 >= 0) {
-
-			if (getValueAt(startX - 1, startY) == 7 || getValueAt(startX - 1, startY) == 6
-					|| getValueAt(startX - 1, startY) == 4 || getValueAt(startX - 1, startY) == 8) {
-				Node node = new Node(2, startX - 1, startY);
-				possibleMoves.add(node);
-
-				// return 2;
-			}
-		}
-
-		if (startX + 1 < 50) {
-
-			if (getValueAt(startX + 1, startY) == 7 || getValueAt(startX + 1, startY) == 6
-					|| getValueAt(startX + 1, startY) == 4 || getValueAt(startX + 1, startY) == 8) {
-
-				Node node = new Node(3, startX + 1, startY);
-				possibleMoves.add(node);
-				// return 3;
-			}
-
-		}
-		if (possibleMoves.size() == 0) {
-			System.err.println("No safe Move");
-			return 5;
-		}
-
-		else {
-
-			int max = -9999999;
-
-			for (Node n : possibleMoves) {
-
-				// System.err.println(n.getValue()+" "+calcOpenSpaces(n));
-				if (max < calcOpenSpaces(n)) {
-
-					max = calcOpenSpaces(n);
-					maxMove = n.getValue();
-				}
-			}
-		}
-		if (maxMove == 5) {
-			System.err.println("No safe Move");
-		}
-
-		return maxMove;
+		return getMove(path.get(1));
 	}
+	
+	private void clearLists() {
+		openList.clear();
+		closedList.clear();
+		path.clear();
+	}
+	
+
+
+	
 
 	private int calcOpenSpaces(Node nextNodes) {
 		
@@ -284,61 +239,7 @@ public class PathFinding extends NodeArray {
 		return numOpenScore;
 	}
 	
-	private void checkNextMoves(NodeArray nodeArray,Node nextMove,int pass) {
-		int move=nextMove.getValue();
-
-		Node head;
-		switch(move) {
-			case 0: 
-				head=mySnake.get(0);
-				head.setX(head.getX());
-				head.setY(head.getY()-1);
-				mySnake.remove(0);
-				mySnake.add(0,head);
-				nodeArray.setValueOf(head.getX(), head.getY(), mySnakeNum);
-				
-			case 1:
-				head=mySnake.get(0);
-				head.setX(head.getX());
-				head.setY(head.getY()+1);
-				mySnake.remove(0);
-				mySnake.add(0,head);
-				nodeArray.setValueOf(head.getX(), head.getY(), mySnakeNum);
-				
-			case 2:
-				head=mySnake.get(0);
-				head.setX(head.getX()-1);
-				head.setY(head.getY());
-				mySnake.remove(0);
-				mySnake.add(0,head);
-				nodeArray.setValueOf(head.getX(), head.getY(), mySnakeNum);
-				
-			case 3:
-				head=mySnake.get(0);
-				head.setX(head.getX()+1);
-				head.setY(head.getY());
-				mySnake.remove(0);
-				mySnake.add(0,head);
-				nodeArray.setValueOf(head.getX(), head.getY(), mySnakeNum);
-		}
-		
-		moveTail(nodeArray);
-		
-		
-
-	}
 	
-	private void moveTail(NodeArray nodeArray) {
-		for(int i=1;i<mySnake.size();i++) {
-			Node next=mySnake.get(i-1);
-			Node current=mySnake.get(i);
-			current.setX(next.getX());
-			current.setY(next.getY());
-			nodeArray.setValueOf(current.getX(), current.getY(), mySnakeNum);
-		}
-		Node last=mySnake.get(mySnake.size()-1);
-		nodeArray.setValueOf(last.getX(), last.getY(), 7);
-	}
 	
 	
 }
