@@ -8,7 +8,7 @@ import za.ac.wits.snake.DevelopmentAgent;
 public class MyAgent extends DevelopmentAgent {
 	SnakeMethods snakeMethods=new SnakeMethods();
 	
-	visualDebug vBug=new visualDebug();
+	//visualDebug vBug=new visualDebug();
 	
     public static void main(String args[]) throws IOException {
         MyAgent agent = new MyAgent();
@@ -59,11 +59,12 @@ public class MyAgent extends DevelopmentAgent {
                     coOrds="";
                     if(snakeLine[0].equals("alive")) {//only should do something with the info if it is alive
 //	                    if (i == mySnakeNum) {
+                    		int length=Integer.parseInt(snakeLine[1]);
 	                    	for(int k=3;k<snakeLine.length;k++) {
 	                    		String xy=snakeLine[k];
 	                    		coOrds=coOrds+xy+" ";
 	                    	}
-	                    	snakeMethods.setSnake(i,coOrds);
+	                    	snakeMethods.setSnake(i,coOrds,length);
 //	                    }
                     }
 
@@ -72,26 +73,28 @@ public class MyAgent extends DevelopmentAgent {
 
                 myTimer.start();
                 int move = snakeMethods.getNextMove();
-                vDebug(snakeMethods.getBoard());
+              //  vDebug(snakeMethods.getBoard());
                 System.out.println(move);
                 myTimer.stop();
-
-                //System.err.println(" Time : " + myTimer.getTime());
+                if( myTimer.getTime()>30) {
+                	  System.err.println(" Time : " + myTimer.getTime());
+                }
+              
                // snakeMethods.printBoard();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    public void vDebug(ArrayList<Node>board)
-    {
-    	
-    	NodeArray playArea=new NodeArray();
-    	playArea.setBoard(board);
-    	int row = 50;
-    	int col = 50;
-    	imgView v = new imgView(playArea,row,col);
-        vBug.update(v.getImage());
-    }
+//    public void vDebug(ArrayList<Node>board)
+//    {
+//    	
+//    	NodeArray playArea=new NodeArray();
+//    	playArea.setBoard(board);
+//    	int row = 50;
+//    	int col = 50;
+//    	imgView v = new imgView(playArea,row,col);
+//        vBug.update(v.getImage());
+//    }
     
 }

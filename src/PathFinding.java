@@ -9,19 +9,24 @@ public class PathFinding extends NodeArray {
 	
 	private Node startNode;
 	private Node apple;
+	private int appleTime;
 	private Node currentNode;
 	private ArrayList<Node> openList = new ArrayList<Node>();
 	private ArrayList<Node> closedList = new ArrayList<Node>();
 	private ArrayList<Node> path = new ArrayList<Node>();
 	
-	
+	private int mySnakeLength;
+	private ArrayList<Node> enemyPossibleMoves=new ArrayList();
 
-	public PathFinding(ArrayList<Node>b,Node s, Node a, int dir,ArrayList<Node> tail) {
+	public PathFinding(ArrayList<Node>b,Node s, Node a, int dir,ArrayList<Node> tail,int time,int l,ArrayList<Node> enemy) {
 		setBoard(b);
 		startNode = s;
 		apple = a;
 		mySnakeDir = dir;
 		mySnake=tail;
+		appleTime=time;
+		mySnakeLength=l;
+		enemyPossibleMoves=enemy;
 	}
 	
 	public PathFinding(Node s, Node a, ArrayList<Node> tail) {
@@ -56,9 +61,13 @@ public class PathFinding extends NodeArray {
 						distance(x, y));
 				if (x != 0 || y != 0) {// not the same node
 					if (nodeExistsAt(currentNode.getX() + x, currentNode.getY() + y)
-							&& (getNodeAt(currentNode.getX() + x, currentNode.getY() + y).getValue() == 7
-									|| getNodeAt(currentNode.getX() + x, currentNode.getY() + y).getValue() == target)
-							&& !findNeighborInList(openList, node) && !findNeighborInList(closedList, node)) {
+							&& (
+								getNodeAt(currentNode.getX() + x, currentNode.getY() + y).getValue() == 7 ||
+							    getNodeAt(currentNode.getX() + x, currentNode.getY() + y).getValue() == target
+							   )
+							
+							&& !findNeighborInList(openList, node)
+							&& !findNeighborInList(closedList, node)) {
 						// System.err.println(node.toString());
 						openList.add(node);
 					}
@@ -114,12 +123,16 @@ public class PathFinding extends NodeArray {
 
 		double dist = Math.sqrt(sum1 + sum2);
 
-		if (dist > 25) {
+		if (dist > 24 ) {
 			return false;
 		}
 		return true;
 
 	}
+	
+//	private boolean checkFreeApple() {
+//		
+//	}
 
 	private int getMove(Node n) {
 		setValueOf(n.getX(),n.getY(),9);
@@ -141,105 +154,30 @@ public class PathFinding extends NodeArray {
 	public int getNextMove(int num) {
 		clearLists();
 		mySnakeNum = num;
-		ModMethods modMethods=new ModMethods();
-		if(!checkDistance(startNode)) {
-			return modMethods.getNextSafeMove( board,mySnake, startNode,mySnakeDir);
+		ModMethods modMethods=new ModMethods( board,mySnake, startNode,mySnakeDir,mySnakeLength,enemyPossibleMoves);
+		if(appleTime>50 || !checkDistance(startNode)) {
+			return modMethods.getNextSafeMove();
 		}
 		ArrayList<Node> path = findPath(apple);
 		if (path == null ) {
-			// System.err.println("Getting a safe move");
-			return modMethods.getNextSafeMove( board,mySnake, startNode,mySnakeDir);
+
+			return modMethods.getNextSafeMove( );
 		}
 
 		Node n = path.get(1);
-		// setValueOf(n.getX(),n.getY(),-1);
-		return getMove(n);
+		if(modMethods.checkSafeApple(getMove(n))) {
+			return getMove(n);
+		}
+		return modMethods.getNextSafeMove( );
 	}
 	
-	public int getSafeMove(Node openSpace) {
-		clearLists();
-		System.err.println("Value "+openSpace.getValue());
-		ArrayList<Node> path = findPath(openSpace);
-		if(path==null) {
-			System.err.println("null");
-			return -1;
-		}
-		setValueOf(openSpace.getX(),openSpace.getY(),-1);
-		if(path.size()==1) {
-			return getMove(path.get(0));
-		}
-		return getMove(path.get(1));
-	}
+
 	
 	private void clearLists() {
 		openList.clear();
 		closedList.clear();
 		path.clear();
 	}
-	
 
-
-	
-
-	private int calcOpenSpaces(Node nextNodes) {
-		
-		int numOpenScore = 0;
-		int xNeg = nextNodes.getX();
-		int yNeg = nextNodes.getY();
-		if(nextNodes.getValue()==mySnakeDir) {
-			numOpenScore=numOpenScore+10;//Favors going straight
-		}
-
-		for (int x = nextNodes.getX(); x <= nextNodes.getX() +3; x++) {
-			for (int y = nextNodes.getY(); y <= nextNodes.getY() + 3; y++) {
-				yNeg = nextNodes.getY();
-
-				if (nodeExistsAt(x, y)) {
-
-					if(getValueAt(x,y)==7 ) {
-						numOpenScore=numOpenScore+5;
-					}
-					if (getValueAt(x,y)==8 ) {
-						numOpenScore=numOpenScore+5;
-					}
-					if (getValueAt(x,y)==4 ) {
-						numOpenScore=numOpenScore+1;
-					}
-					if (getValueAt(x,y)==mySnakeNum ) {
-						numOpenScore=numOpenScore-15;
-					}
-
-
-
-				}
-
-				if (nodeExistsAt(xNeg, yNeg)) {
-
-					if(getValueAt(xNeg,yNeg)==7 ) {
-						numOpenScore=numOpenScore+5;
-					}
-					if (getValueAt(xNeg,yNeg)==8 ) {
-						numOpenScore=numOpenScore+5;
-					}
-					if (getValueAt(xNeg,yNeg)==4 ) {
-						numOpenScore=numOpenScore+1;
-					}
-					
-					if(getValueAt(xNeg,yNeg)==mySnakeNum ) {
-						numOpenScore=numOpenScore-15;
-					}
-
-				}
-
-				yNeg = yNeg - 1;
-			}
-			xNeg = xNeg - 1;
-		}
-
-		return numOpenScore;
-	}
-	
-	
-	
 	
 }
