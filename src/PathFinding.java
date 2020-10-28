@@ -130,9 +130,20 @@ public class PathFinding extends NodeArray {
 
 	}
 	
-//	private boolean checkFreeApple() {
-//		
-//	}
+	private boolean freeApple() {
+		for(int x=apple.getX()-13;x<apple.getX()+13;x++) {
+			for(int y=apple.getY()-13;y<apple.getY()+13;y++) {
+				if(nodeExistsAt(x,y)) {
+					int value=getValueAt(x,y);
+
+					if(value!=7 && value!=5 && value!=mySnakeNum && value!=6) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
 
 	private int getMove(Node n) {
 		setValueOf(n.getX(),n.getY(),9);
@@ -155,7 +166,7 @@ public class PathFinding extends NodeArray {
 		clearLists();
 		mySnakeNum = num;
 		ModMethods modMethods=new ModMethods( board,mySnake, startNode,mySnakeDir,mySnakeLength,enemyPossibleMoves);
-		if(appleTime>50 || !checkDistance(startNode)) {
+		if(appleTime>50 || (!checkDistance(startNode) && !freeApple())) {
 			return modMethods.getNextSafeMove();
 		}
 		ArrayList<Node> path = findPath(apple);

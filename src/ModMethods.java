@@ -84,13 +84,13 @@ public class ModMethods {
 
 		if (startY - 1 >= 0) {
 
-			if (currentState.getValueAt(startX, startY - 1) == 7 || currentState.getValueAt(startX, startY - 1) == 7) {
+			if (currentState.getValueAt(startX, startY - 1) == 7 || currentState.getValueAt(startX, startY - 1) == 4) {
 				possibleMoves.add( currentState.getNodeAt(startX, startY-1));
 			}
 		}
 
 		if (startY + 1 < 50) {
-			if (currentState.getValueAt(startX, startY + 1) == 7 || currentState.getValueAt(startX, startY + 1) == 7) {
+			if (currentState.getValueAt(startX, startY + 1) == 7 || currentState.getValueAt(startX, startY + 1) == 4) {
 				possibleMoves.add( currentState.getNodeAt(startX, startY+1));
 			}
 
@@ -98,7 +98,7 @@ public class ModMethods {
 
 		if (startX - 1 >= 0) {
 
-			if (currentState.getValueAt(startX - 1, startY) == 7 || currentState.getValueAt(startX - 1, startY) == 7) {
+			if (currentState.getValueAt(startX - 1, startY) == 7 || currentState.getValueAt(startX - 1, startY) == 4) {
 				possibleMoves.add( currentState.getNodeAt(startX-1, startY));
 			}
 
@@ -107,7 +107,7 @@ public class ModMethods {
 
 		if (startX + 1 < 50) {
 
-			if (currentState.getValueAt(startX + 1, startY) == 7 || currentState.getValueAt(startX + 1, startY) == 7) {
+			if (currentState.getValueAt(startX + 1, startY) == 7 || currentState.getValueAt(startX + 1, startY) == 4) {
 				possibleMoves.add( currentState.getNodeAt(startX+1, startY));
 			}
 
@@ -195,6 +195,7 @@ public class ModMethods {
 //					mostImmediateSpaces=immSpaces;
 //					move=i;
 //				}
+//				
 //			}
 		}
 		if(move==5) {
@@ -215,6 +216,7 @@ public class ModMethods {
 		Node currentNode;
 		
 
+
 		while(!queue.isEmpty()) {
 			
 			
@@ -224,20 +226,14 @@ public class ModMethods {
 				visited.add(currentNode);
 				nextState.setValueOf(currentNode.getX(), currentNode.getY(), mySnakeNum);
 				nextState.setStartNode(currentNode);
+			
 				for(Node n:getASafeNode(nextState)) {
 					queue.add(n);
 				}
 				
 			}
-			
-			if(visited.size()>1000) {
-				break;
-			}
-			
 
-			
 		}
-		
 
 		return visited.size();
 		

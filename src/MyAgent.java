@@ -8,7 +8,7 @@ import za.ac.wits.snake.DevelopmentAgent;
 public class MyAgent extends DevelopmentAgent {
 	SnakeMethods snakeMethods=new SnakeMethods();
 	
-	//visualDebug vBug=new visualDebug();
+	visualDebug vBug=new visualDebug();
 	
     public static void main(String args[]) throws IOException {
         MyAgent agent = new MyAgent();
@@ -73,10 +73,10 @@ public class MyAgent extends DevelopmentAgent {
 
                 myTimer.start();
                 int move = snakeMethods.getNextMove();
-              //  vDebug(snakeMethods.getBoard());
+                vDebug(snakeMethods.getBoard());
                 System.out.println(move);
                 myTimer.stop();
-                if( myTimer.getTime()>30) {
+                if( myTimer.getTime()>20) {
                 	  System.err.println(" Time : " + myTimer.getTime());
                 }
               
@@ -86,15 +86,15 @@ public class MyAgent extends DevelopmentAgent {
             e.printStackTrace();
         }
     }
-//    public void vDebug(ArrayList<Node>board)
-//    {
-//    	
-//    	NodeArray playArea=new NodeArray();
-//    	playArea.setBoard(board);
-//    	int row = 50;
-//    	int col = 50;
-//    	imgView v = new imgView(playArea,row,col);
-//        vBug.update(v.getImage());
-//    }
+    public void vDebug(ArrayList<Node>board)
+    {
+    	
+    	NodeArray playArea=new NodeArray();
+    	playArea.setBoard(board);
+    	int row = 50;
+    	int col = 50;
+    	imgView v = new imgView(playArea,row,col);
+        vBug.update(v.getImage());
+    }
     
 }
